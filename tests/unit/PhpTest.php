@@ -2,6 +2,7 @@
 
 
 use Futape\Utility\Php\Php;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -68,12 +69,13 @@ class PhpTest extends TestCase
      * @param string $option
      * @param string $setUpValue
      * @param $assertValue
+     *
+     * @throws Exception
      */
     public function testAssertIni(string $option, string $setUpValue, $assertValue)
     {
-        $tearDownValue = ini_set($option, $setUpValue);
+        $this->iniSet($option, $setUpValue);
         $this->assertTrue(Php::assertIni($option, $assertValue));
-        ini_set($option, $tearDownValue);
     }
 
     public function assertIniDataProvider(): array
@@ -90,10 +92,9 @@ class PhpTest extends TestCase
 
     public function testAssertIniNull()
     {
-        $tearDownValue = ini_get('error_append_string');
+        $this->iniSet('error_append_string', 'foobar');
         ini_restore('error_append_string');
         $this->assertTrue(Php::assertIni('error_append_string', null));
-        ini_set('error_append_string', $tearDownValue);
     }
 
     public function testAssertIniInvalidOption()

@@ -88,7 +88,7 @@ abstract class Php
         }
 
         throw new InvalidArgumentException(
-            'Argument for $expected parameter needs to be boolean, string or null',
+            'Argument for $expected parameter needs to be boolean, string or null; was ' . gettype($expected),
             1573396893
         );
     }
