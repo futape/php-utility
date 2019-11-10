@@ -4,6 +4,7 @@
 namespace Futape\Utility\Php;
 
 use Futape\Utility\String\Strings;
+use InvalidArgumentException;
 
 abstract class Php
 {
@@ -48,5 +49,47 @@ abstract class Php
         $bytes = $amount * pow(1024, self::SHORT_NOTATION_SYMBOLS[$symbol]);
 
         return $bytes;
+    }
+
+    /**
+     * Asserts the value of an INI option
+     *
+     * If a boolean arguments is passed to $expected, the INI value is asserted to be "0", "Off" (case-insensitive)
+     * or an empty string for `false`, or "1" or "On" (case-insensitive) for `true`.
+     * Expecting `null`, asserts the INI value to be an empty string and string arguments for $expected are
+     * just compared to the plain INI value.
+     * `null` is returned if the option doesn't exist.
+     *
+     * @param string $option
+     * @param bool|string|null $expected
+     * @return bool|null
+     *
+     * @throws InvalidArgumentException If an invalid argument is passed to $expected
+     */
+    public static function assertIni(string $option, $expected): ?bool
+    {
+        $value = ini_get($option);
+
+        if ($value === false) {
+            return null;
+        }
+
+        if ($expected === false) {
+            return $value == '' || $value == '0' || mb_strtolower($value) == 'off';
+        }
+        if ($expected === true) {
+            return $value == '1' || mb_strtolower($value) == 'on';
+        }
+        if ($expected === null) {
+            return $value == '';
+        }
+        if (is_string($expected)) {
+            return $value == $expected;
+        }
+
+        throw new InvalidArgumentException(
+            'Argument for $expected parameter needs to be boolean, string or null',
+            1573396893
+        );
     }
 }

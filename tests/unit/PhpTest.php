@@ -61,4 +61,49 @@ class PhpTest extends TestCase
             ]
         ];
     }
+
+    /**
+     * @dataProvider assertIniDataProvider
+     *
+     * @param string $option
+     * @param string $setUpValue
+     * @param $assertValue
+     */
+    public function testAssertIni(string $option, string $setUpValue, $assertValue)
+    {
+        $tearDownValue = ini_set($option, $setUpValue);
+        $this->assertTrue(Php::assertIni($option, $assertValue));
+        ini_set($option, $tearDownValue);
+    }
+
+    public function assertIniDataProvider(): array
+    {
+        return [
+            'Assert string value' => ['user_agent', 'curl/7.65.1', 'curl/7.65.1'],
+            'Assert true (1)' => ['display_errors', '1', true],
+            'Assert true (on)' => ['display_errors', 'On', true],
+            'Assert false (0)' => ['display_errors', '0', false],
+            'Assert false (off)' => ['display_errors', 'Off', false],
+            'Assert false (empty string)' => ['display_errors', '', false]
+        ];
+    }
+
+    public function testAssertIniNull()
+    {
+        $tearDownValue = ini_get('error_append_string');
+        ini_restore('error_append_string');
+        $this->assertTrue(Php::assertIni('error_append_string', null));
+        ini_set('error_append_string', $tearDownValue);
+    }
+
+    public function testAssertIniInvalidOption()
+    {
+        $this->assertNull(Php::assertIni('foobar', null));
+    }
+
+    public function testAssertIniInvalidArgument()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Php::assertIni('user_agent', 1);
+    }
 }
