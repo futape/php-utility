@@ -14,6 +14,18 @@ abstract class Php
         'g' => 3
     ];
 
+    const SUPERGLOBALS = [
+        'GLOBALS',
+        '_SERVER',
+        '_GET',
+        '_POST',
+        '_FILES',
+        '_COOKIE',
+        '_SESSION',
+        '_REQUEST',
+        '_ENV'
+    ];
+
     /**
      * Converts a shorthand byte value to bytes
      *
@@ -115,5 +127,26 @@ abstract class Php
         }
 
         return $supergobals;
+    }
+
+    /**
+     * Checks if a string is a valid variable name
+     *
+     * A superglobal's name and "this" are considered invalid.
+     *
+     * @see http://php.net/manual/en/language.variables.basics.php
+     *
+     * @param string $name
+     * @return bool
+     */
+    public static function isValidVariableName(string $name): bool
+    {
+        if (in_array($name, self::SUPERGLOBALS) || $name == 'this') {
+            return false;
+        }
+
+        $isValid = eval('return function () {extract(["' . Strings::escape($name) . '" => true], EXTR_SKIP); return isset(${"' . Strings::escape($name) . '"});};');
+
+        return $isValid();
     }
 }

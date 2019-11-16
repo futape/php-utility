@@ -121,4 +121,37 @@ class PhpTest extends TestCase
         $this->assertArrayHasKey('_REQUEST', $superglobals);
         $this->assertArrayHasKey('_ENV', $superglobals);
     }
+
+    /**
+     * @dataProvider isValidVariableNameDataProvider
+     *
+     * @param array $input
+     * @param bool $expected
+     */
+    public function testIsValidVariableName(array $input, bool $expected)
+    {
+        $this->assertEquals($expected, Php::isValidVariableName(...$input));
+    }
+
+    public function isValidVariableNameDataProvider(): array
+    {
+        return [
+            'Superglobal' => [
+                ['_GET'],
+                false
+            ],
+            'Invalid variable name' => [
+                ['foo bar'],
+                false
+            ],
+            'this' => [
+                ['this'],
+                false
+            ],
+            'Valid' => [
+                ['foo'],
+                true
+            ]
+        ];
+    }
 }
