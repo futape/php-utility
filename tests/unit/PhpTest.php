@@ -107,4 +107,18 @@ class PhpTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         Php::assertIni('user_agent', 1);
     }
+
+    public function testGetSuperglobals()
+    {
+        $superglobals = Php::getSuperglobals();
+
+        $this->assertArrayHasKey('GLOBALS', $superglobals);
+        $this->assertArrayHasKey('_SERVER', $superglobals);
+        $this->assertArrayHasKey('_GET', $superglobals);
+        $this->assertArrayHasKey('_POST', $superglobals);
+        $this->assertArrayHasKey('_FILES', $superglobals);
+        $this->assertArrayHasKey('_COOKIE', $superglobals);
+        $this->assertArrayHasKey('_REQUEST', $superglobals);
+        $this->assertArrayHasKey('_ENV', $superglobals);
+    }
 }

@@ -92,4 +92,28 @@ abstract class Php
             1573396893
         );
     }
+
+    /**
+     * Returns all registered superglobals as an associative array
+     *
+     * Beware that $_SESSION is registered only if a session is currently running.
+     *
+     * @see http://php.net/manual/en/language.variables.superglobals.php
+     *
+     * @return array
+     */
+    public static function getSuperglobals(): array
+    {
+        $supergobals = [];
+
+        foreach ($GLOBALS as $name => $value) {
+            $isset = eval('return function () {return isset(${"'. Strings::escape($name) . '"});};');
+
+            if ($isset()) {
+                $supergobals[$name] = $value;
+            }
+        }
+
+        return $supergobals;
+    }
 }
