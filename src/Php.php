@@ -145,7 +145,10 @@ abstract class Php
             return false;
         }
 
-        $isValid = eval('return function () {extract(["' . Strings::escape($name) . '" => true], EXTR_SKIP); return isset(${"' . Strings::escape($name) . '"});};');
+        $isValid = eval(
+            'return function () {extract(["' . Strings::escape($name) . '" => true], EXTR_SKIP);' .
+                'return isset(${"' . Strings::escape($name) . '"});};'
+        );
 
         return $isValid();
     }
